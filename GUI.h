@@ -1,17 +1,14 @@
 #ifndef GUI_H
 #define GUI_H
 
-// Import library to work with the shield
 #include "Globals.h"
-#include "GUI.h"
 
-// A custom function that uses less memory than lcd.clear and doesn't remove the arrow
-void clearText()
+void clearScreen()
 {
-  EsploraTFT.background(0,0,0)
+  
+  EsploraTFT.background(1,1,1);
 }
 
-// Set up each menu
 void buildInitialMenu()
 {
   // The elements of this menu are manually set
@@ -24,7 +21,7 @@ void buildInitialMenu()
   initialMenu.next[1] = &pokemonMenu;
   initialMenu.next[2] = nullptr;
   initialMenu.next[3] = nullptr;
-  initialMenu.func = &initialMenuFunctionDecider;
+  //initialMenu.func = &initialMenuFunctionDecider;
 }
 
 #endif
