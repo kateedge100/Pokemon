@@ -3,6 +3,14 @@
 
 #define MAX_MENU_ELEMENTS 6
 
+int cursorRow = 0;
+int newCursorRow;
+int yAxis = 0;    // read the Y axis
+
+int rightButton = Esplora.readButton(SWITCH_RIGHT);
+
+  
+
 typedef struct menu_t {
   // A set of strings which forms the options of a menu. How many strings is dependent on MAX_MENU_ELEMENTS
   char* element[MAX_MENU_ELEMENTS];
@@ -22,8 +30,12 @@ typedef struct menu_t {
   void (*altView)();
 } menu_t;
 
+menu_t *currentMenu;
 menu_t initialMenu = {};
+menu_t mainMenu = {};
 menu_t pokemonMenu = {};
+menu_t playerMenu = {};
+menu_t battleMenu = {};
 
 void initialMenuFunctionDecider();
 
