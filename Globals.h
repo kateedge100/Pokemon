@@ -4,10 +4,13 @@
 #define MAX_MENU_ELEMENTS 6
 
 int cursorRow = 0;
-int newCursorRow;
 int yAxis = 0;    // read the Y axis
 
 int rightButton = Esplora.readButton(SWITCH_RIGHT);
+
+int numberOfPokemon = 0;
+
+enum TypeID {FIRE, WATER, GRASS, ELECTRIC};
 
   
 
@@ -33,9 +36,50 @@ typedef struct menu_t {
 menu_t *currentMenu;
 menu_t initialMenu = {};
 menu_t mainMenu = {};
-menu_t pokemonMenu = {};
-menu_t playerMenu = {};
 menu_t battleMenu = {};
+menu_t playerMenu = {};
+menu_t battlePlayerMenu = {};
+menu_t pokemonMenu = {};
+menu_t nameMenu = {};
+menu_t starterPokemonMenu = {};
+menu_t battleScreen = {};
+menu_t myPokemonMenu = {};
+
+
+struct  moves_t {
+  byte id;
+  char name[14];
+  byte power;
+  byte acc;
+  byte lvl;
+};
+
+struct stats_t
+{
+  byte HP;
+  byte Att;
+  byte Def;
+  byte Speed;
+};
+
+struct pokemon
+{
+  char name[14];
+  TypeID type;
+  int health;
+  int EV;
+  int xp;
+  moves_t *moves[4];
+  byte moveUsed[8];
+};
+
+void selectPokemon();
+void viewMyPokemon();
+
+
+
+
+
 
 void initialMenuFunctionDecider();
 
