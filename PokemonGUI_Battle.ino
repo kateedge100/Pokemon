@@ -1,71 +1,79 @@
-#include <TFT.h>
-#include <SPI.h>
-#include <Esplora.h>
-#include "GUI.h"
+
 #include "Globals.h"
+#include "GUI.h"
+//#include "statsSystem.h"
+//PImage img;
 
-
-
-void setup() {
-
-  //Serial.begin(9600);
-  
+void setup() 
+{
+  Serial.begin(9600);
+  SPI.begin();
   EsploraTFT.begin(); 
-   
+
   EsploraTFT.background(0,0,0);  // clear the screen with black
 
+ buildInitialMenu();
+ buildMainMenu();
+ buildBattleMenu();
+ buildChallengeResponseMenu();
+ buildPickPokemonForBattleMenu();
+ buildMovesMenu();
+ buildPlayerMenu();
+ buildPokemonInfoMenu();
+ buildNameMenu();
+ buildStarterPokemonMenu();
+ buildMyPokemonMenu();
+
+
   // writes starting menu to screen
-   buildInitialMenu();
-   buildMainMenu();
-   buildBattleMenu();
-   buildPlayerMenu();
-   buildPokemonMenu();
-   buildNameMenu();
-   buildStarterPokemonMenu();
-   buildMyPokemonMenu();
-   
+  currentMenu = &initialMenu;
 
-   currentMenu = &initialMenu;
+  // build current menu which is initial menu to start with
+  renderMenu(currentMenu);
 
-   // build current menu which is initial menu to start with
-   renderMenu(currentMenu);
-
-
+  if (!SD.begin(SD_card)) 
+  {
+    Serial.println("Failed");
+    return;
+  }
+  Serial.println("Succeded");
 }
 
-void loop() {
-
-
+void loop() 
+{
+  while(currentMenu == &myPokemonMenu)
+  {
+    if(numberOfPokemon != 0)
+    {
+      viewMyPokemon();
+      renderMenu(currentMenu);
+    }
+  }
+   
   int rightButton = Esplora.readButton(SWITCH_RIGHT);
   int downButton = Esplora.readButton(SWITCH_DOWN);
 
   // if right button is pressed and the row leads to a new menu the new menu is rendered
-  if(rightButton == LOW && currentMenu->next[(cursorRow/30)]!=nullptr )
-  {
-    
+  if(rightButton == LOW && currentMenu->next[(cursorRow/30)] != nullptr )
+  { 
     clearScreen();
 
     // if on select pokemon page select pokemon based on choice
-    if(currentMenu==&starterPokemonMenu)
+    if(currentMenu == &starterPokemonMenu)
     {
-      selectPokemon();
-    }
+      selectStarterPokemon();
+    }   
 
-    else if(currentMenu==&myPokemonMenu)
+    else if(currentMenu == &pickPokemonForBattleMenu)
     {
       viewMyPokemon();
     }
-    
+      
     else
     {
       currentMenu=currentMenu->next[(cursorRow/30)];
-      
     }
-
     renderMenu(currentMenu);
-
-    
-   
   }
   
 
@@ -79,14 +87,6 @@ void loop() {
     renderMenu(currentMenu);
    
   }
-  
-  
-
 
  switchRow(currentMenu);
- 
-
- 
-  
-
 }

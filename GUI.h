@@ -2,12 +2,11 @@
 #define GUI_H
 
 #include "Globals.h"
-#include "statsSystem.h"
-
+//#include "statsSystem.h"
+#include "pokedex.h"
 
 void clearScreen()
 {
-  
   EsploraTFT.background(0,0,0);
 }
 
@@ -36,6 +35,8 @@ void buildMainMenu()
   mainMenu.prev = &initialMenu;
 }
 
+
+// Add code so that there is a waiting screen and only proceeds when network establisted, also display opponents name
 void buildBattleMenu()
 {
   // The elements of this menu are manually set
@@ -43,30 +44,107 @@ void buildBattleMenu()
   battleMenu.element[1] = (char*)"Battle \n  Player";
   battleMenu.elements = 2;
   battleMenu.next[0] = nullptr;
-  battleMenu.next[1] = nullptr;
+  battleMenu.next[1] = &challengeResponseMenu;
   battleMenu.prev = &mainMenu;
 }
+
+void buildChallengeResponseMenu()
+{
+  challengeResponseMenu.element[0] = (char*)"Accept        ";
+  challengeResponseMenu.element[1] = (char*)"Reject        ";
+  challengeResponseMenu.elements = 2;
+  challengeResponseMenu.next[0] = &pickPokemonForBattleMenu;
+  challengeResponseMenu.next[1] = nullptr;
+  challengeResponseMenu.prev = &battleMenu;
+  //challengeResponseMenu.func = &acceptReject;
+}
+
+void buildPickPokemonForBattleMenu()
+{
+  /*for(int i = 0; i < 1; ++i)
+  {
+
+  // FIND A WAY TO CONVERT STRING TO CHAR*
+    char * tmp =  (char *) String(starterPokemon[0].health).c_str();
+    
+    pickPokemonForBattleMenu.element[0] =tmp;
+   // pickPokemonForBattleMenu.element[0] = 
+    pickPokemonForBattleMenu.elements++;
+    pickPokemonForBattleMenu.next[0] = nullptr;
+  //}
+  pickPokemonForBattleMenu.prev = &battleMenu; 
+
+  {*/
+// FIND A WAY TO CONVERT STRING TO CHAR*
+    //char * tmp =  (char *) String(currentPokemon[0].name).c_str();
+    
+    //pickPokemonForBattleMenu.element[0] =tmp;
+ 
+  pickPokemonForBattleMenu.element[0] = (char*)"Select\n  Pokemon\n  For Battle ";
+  pickPokemonForBattleMenu.elements=1;
+  pickPokemonForBattleMenu.next[0] = &movesMenu;
+
+  int pokemonRow = 30;
+  
+  /*for(int i = 0; i < (sizeof(currentPokemon)/sizeof(pokemon))+1; ++i)
+  {
+    //char* tmp = currentPokemon[i].name;
+   
+       EsploraTFT.stroke(255,255,255);
+       EsploraTFT.text((char*) currentPokemon[i].name,25,pokemonRow);
+     
+
+       pokemonRow+=30;
+    
+    
+ 
+  }*/
+  
+  pickPokemonForBattleMenu.prev = &battleMenu;
+  
+
+  
+}
+
+void buildMovesMenu()
+{
+  movesMenu.element[0] = (char*)"Pick Move";
+  movesMenu.next[0]=nullptr;
+  movesMenu.elements=1;
+
+  for(int i=0; i<4; i++)
+  {
+    movesMenu.element[i+1] = currentPokemon[selectedPokemon].moves[i]->name;
+    movesMenu.elements++;
+    movesMenu.next[i+1] = &pickPokemonForBattleMenu;
+   
+  }
+
+  movesMenu.prev = &battleMenu;
+  //challengeResponseMenu.func = &acceptReject;
+}
+
 
 void buildPlayerMenu()
 {
   // The elements of this menu are manually set
-  playerMenu.element[0] = (char*)"Pokemon        ";
+  playerMenu.element[0] = (char*)"Pokemon ";
   playerMenu.element[1] = (char*)"Player Info";
   playerMenu.elements = 2;
-  playerMenu.next[0] = &pokemonMenu;
+  playerMenu.next[0] = &pokemonInfoMenu;
   playerMenu.next[1] = nullptr;
   playerMenu.prev = &mainMenu;
 }
 
-void buildPokemonMenu()
+void buildPokemonInfoMenu()
 {
   // The elements of this menu are manually set
-  pokemonMenu.element[0] = (char*)"View Pokemon        ";
-  pokemonMenu.element[1] = (char*)"Select Team";
-  pokemonMenu.elements = 2;
-  pokemonMenu.next[0] = &myPokemonMenu;
-  pokemonMenu.next[1] = nullptr;
-  pokemonMenu.prev = &playerMenu;
+  pokemonInfoMenu.element[0] = (char*)"View Pokemon        ";
+ pokemonInfoMenu.element[1] = (char*)"Select Team";
+ pokemonInfoMenu.elements = 2;
+ pokemonInfoMenu.next[0] = &myPokemonMenu;
+ pokemonInfoMenu.next[1] = nullptr;
+  pokemonInfoMenu.prev = &playerMenu;
 }
 
 void buildNameMenu()
@@ -81,7 +159,7 @@ void buildNameMenu()
 void buildStarterPokemonMenu()
 {
   // The elements of this menu are manually set
-  starterPokemonMenu.element[0] = (char*)"Choose \nStarter Pokemon  ";
+  starterPokemonMenu.element[0] = (char*)"Choose \n  Pokemon  ";
   starterPokemonMenu.element[1] = (char*)"Charmander  ";
   starterPokemonMenu.element[2] = (char*)"Squirtle  ";
   starterPokemonMenu.element[3] = (char*)"Bulbasaur  ";
@@ -95,19 +173,90 @@ void buildStarterPokemonMenu()
 
 void buildMyPokemonMenu()
 {
-  myPokemonMenu.prev=&pokemonMenu;
+  myPokemonMenu.element[0] = (char*)"My Pokemon  ";
+  myPokemonMenu.elements = 1;
+  myPokemonMenu.next[0] = nullptr;
+  myPokemonMenu.prev = &pokemonInfoMenu;
+  
 }
 
+// Creates an element for each Pokemon and assigns the corresponding Pokemon's name to each one, problems printing out from myPokemon rather then starterPokemon
 void viewMyPokemon()
 {
-  int row = 0;
-  for(int i=0;i<numberOfPokemon; i++)
+  int pokemonRow = 30;
+  //clearScreen();
+  
+  EsploraTFT.stroke(255,255,255);
+  for(int i = 0; i < (sizeof(currentPokemon)/sizeof(pokemon))+1; ++i)
   {
-    EsploraTFT.stroke(255,255,255);
-    EsploraTFT.text(myPokemon[i].name,25,row);
-    row+=30;
-  }
+    EsploraTFT.text((char*) currentPokemon[i].name,25,pokemonRow);
+    pokemonRow+=30;
+  }  
+
+  delay(750);
+
+  clearScreen();
+  
+  currentMenu = &pokemonInfoMenu;
+ 
+
+} 
+
+//// Function to select which pokemon the user will use in the battle
+//void selectStarterPokemon()
+//{
+//  
+//  // Determine which pokemon is selected and set it as the current
+//  int selectedStarterPokemon = (cursorRow/30)-1;
+//
+//  clearScreen();
+//  
+//  EsploraTFT.stroke(255,255,255);
+//  EsploraTFT.text((char*) starterPokemon[selectedStarterPokemon].name,0,30);
+//  EsploraTFT.text("now selected",0,50);
+//
+//  currentPokemon[0]=starterPokemon[selectedStarterPokemon];
+//
+//  // Test the myPokemon[0] is correct
+//  //EsploraTFT.text(currentPokemon[0].name,0,80);
+//
+//  numberOfPokemon = 1;
+//  
+//  delay(750);
+//
+//  clearScreen();
+//  
+//  currentMenu = &mainMenu;
+//}
+
+// Function to select which pokemon the user will use in the battle
+void selectStarterPokemon()
+{
+  // Determine which pokemon is selected and set it as the current
+  int selectedStarterPokemon = (cursorRow/30)-1;
+
+  clearScreen();
+  
+//  EsploraTFT.stroke(255,255,255);
+  EsploraTFT.text((char*) starterPokemon[selectedStarterPokemon].name,0,30);
+  EsploraTFT.text("now selected",0,50);
+//  PImage img = getFrontImage(1);
+//  EsploraTFT.image(img, 0, 45);
+  currentPokemon[0]=starterPokemon[selectedStarterPokemon];
+
+  // Test the myPokemon[0] is correct
+  //EsploraTFT.text(currentPokemon[0].name,0,80);
+
+  numberOfPokemon = 1;
+
+  
+  delay(750);
+
+  clearScreen();
+  
+  currentMenu = &mainMenu;
 }
+
 
 
 void renderMenu(menu_t *menu)
@@ -126,6 +275,11 @@ void renderMenu(menu_t *menu)
     // draws next element on next row
     row+=30;
   }
+
+  //PImage myPokemonImg = loadFrontImage(4);
+
+  
+  
 }
 
 void switchRow(menu_t *menu)
@@ -165,30 +319,6 @@ void switchRow(menu_t *menu)
  EsploraTFT.stroke(0,0,0);
  EsploraTFT.text("->",0,cursorRow);
   
-}
-
-// Function to select which pokemon the user will use in the battle
-void selectPokemon()
-{
-  int currentPokemon = 0;
-  // Determine which pokemon is selected and set it as the current
-  currentPokemon = (cursorRow/30)-1;
-
-  clearScreen();
-  
-  EsploraTFT.stroke(255,255,255);
-  EsploraTFT.text(starterPokemon[currentPokemon].name,0,30);
-  EsploraTFT.text("now selected",0,50);
-
-  myPokemon[0]=starterPokemon[currentPokemon];
-
-  numberOfPokemon = 1;
-  
-  delay(750);
-
-  clearScreen();
-  
-  currentMenu = &mainMenu;
 }
 
 
