@@ -26,10 +26,15 @@ void setup()
 
 
   // writes starting menu to screen
-  currentMenu = &initialMenu;
+  //currentMenu = &initialMenu;
+
+  //renderMenu(currentMenu);
+
+  // Rewrites menu1 struct as initial menu
+  buildMenu(0);
 
   // build current menu which is initial menu to start with
-  renderMenu(currentMenu);
+  renderMenu1(menu1);
 
   if (!SD.begin(SD_card)) 
   {

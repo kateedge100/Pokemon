@@ -1,8 +1,13 @@
 #ifndef POKEDEX_H
 #define POKEDEX_H
-#include "Globals.h"
 
-#define STEP 40
+
+#include <TFT.h>
+#include <Esplora.h>
+#include <SPI.h>
+
+#include "Globals.h"
+//#define STEP 40
 
 
 //struct pokemon
@@ -18,19 +23,19 @@
 //};
 
 
-String loadPokemon(int _pokemonNum)
+String loadData(int _id, char _lastElement, int _step)
 {
-  if(_pokemonNum < 1)
-    _pokemonNum = 1;
-  else if(_pokemonNum > 151)
-    _pokemonNum = 151;
+  if(_id < 1)
+    _id = 1;
+  else if(_id > 151)
+    _id = 151;
   else
-    _pokemonNum -= 1;
+    _id -= 1;
   Serial.println("Start Loading Pokemon");
   String ret;
   File f = SD.open("pokedex.TXT",FILE_READ);
-  f.seek(STEP*_pokemonNum);
-  ret = f.readStringUntil(' ');
+  f.seek(_step*_id);
+  ret = f.readStringUntil(_id);
   Serial.println(ret);
   Serial.println("Done Loading");
   f.close();
@@ -117,7 +122,7 @@ TypeID getType(String &_PokemonData)
     case 11 : return DRAGON;   break;
     case 12 : return GHOST;    break;
     case 13 : return WATER;    break;
-    defualt : return NORMAL;break;  
+    defualt : return NORMAL;   break;  
   }
 }
 
@@ -204,5 +209,42 @@ stats_t getStats_t(String &_PokemonData)
   return retStats_t;
 }
 
+///////////////////// MENU DATA
+int getElementsNumber(String &_MenuData)
+{
+  return _MenuData.substring(0,1).toInt();
+}
 
+byte getPreviousElement(String &_MenuData)
+{
+  return _MenuData.substring(3,5).toInt();
+}
+
+byte getMenuElement(int _id, String &_MenuData)
+{
+  // the id tells which element of the menu you are trying to load,
+  // then I use a switch to load a specific one
+  // the ID should be from 0 to 3
+  switch(_id)
+  {
+    case 0: return (byte)_MenuData.substring(6,8).toInt(); break;
+    case 1: return (byte)_MenuData.substring(9,11).toInt(); break;
+    case 2: return (byte)_MenuData.substring(12,14).toInt(); break;
+    case 3: return (byte)_MenuData.substring(15,17).toInt(); break;
+    default : return 0;
+  }
+}
+
+char * getMenuElementName(int _id, String &_MenuData)
+{
+  switch(_id)
+  {
+    case 0: return (char *) _MenuData.substring(18,28).c_str(); break;
+    case 1: return (char *) _MenuData.substring(29,39).c_str(); break;
+    case 2: return (char *) _MenuData.substring(40,50).c_str(); break;
+    case 3: return (char *) _MenuData.substring(51,61).c_str(); break;
+    //default : return '0';
+  }
+}
 #endif
+

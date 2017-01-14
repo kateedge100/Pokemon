@@ -5,9 +5,31 @@
 //#include "statsSystem.h"
 #include "pokedex.h"
 
+
 void clearScreen()
 {
   EsploraTFT.background(0,0,0);
+}
+
+
+// creates a generic struct that is rewritten each time a different menu is called, menu info is stored as a string on the SD card
+void buildMenu(int _id)
+{
+  // used to define which menu is currently being rendered 
+  currentRenderedMenu = _id;
+  
+  String tmp_menu = loadData(_id, '|', 63);
+  menu1.elements = getElementsNumber(tmp_menu);
+  // load elements
+
+  for(int i = 0; i< menu1.elements; i++)
+  {
+    menu1.element[i]= getMenuElementName(i, tmp_menu);
+    menu1.next[i] = getMenuElement(i, tmp_menu);
+  }
+
+   menu1.prev = getPreviousElement(tmp_menu);  
+  
 }
 
 void buildInitialMenu()
@@ -276,7 +298,31 @@ void renderMenu(menu_t *menu)
     row+=30;
   }
 
-  //PImage myPokemonImg = loadFrontImage(4);
+ 
+
+  
+  
+}
+
+
+void renderMenu1(menu_t1 menu)
+{ 
+  int row = 0;
+
+  EsploraTFT.stroke(255,255,255);
+  EsploraTFT.setTextSize(2);
+
+  for(int i = 0; i < menu.elements; i++)
+  {
+    
+      // draw i element of the menu
+    EsploraTFT.text(menu.element[i],25,row);
+
+    // draws next element on next row
+    row+=30;
+  }
+
+
 
   
   

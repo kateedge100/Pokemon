@@ -16,9 +16,14 @@ const char SD_card = 8;
 byte numberOfPokemon  = 0;
 byte selectedPokemon  = 0;
 
+// ID of menu currently being rendered
+int currentRenderedMenu = 0;
+
 
 
 enum TypeID { POISON, NORMAL, GRASS, FIRE, ELECTRIC, GROUND, ROCK, ICE, FIGHTING, PSYCHIC, BUG, DRAGON, GHOST, WATER };
+
+enum MenuName {INITIAL, MAIN, BATTLE, CHALLENGERESPONSE, PLAYER, POKEMONINFO, NAME, STARTERPOKEMON, MYPOKEMON,PICKPOKEMONFORBATTLE, MOVES };
 
   
 
@@ -40,7 +45,24 @@ typedef struct menu_t
   // A pointer to an alternative view for this menu, such as viewing the stats of a move in the moveMenu
   // Can be used as a second function pointer if required.
   void (*altView)();
-} menu_t;
+} menu_t;  
+
+typedef struct menu_t1 
+{
+  // A set of strings which forms the options of a menu. How many strings is dependent on MAX_MENU_ELEMENTS
+  char* element[MAX_MENU_ELEMENTS];
+  // ID for each string representing a menu
+  byte lineID;
+  // The number of elements in a menu. Being a Byte, the max is 255.
+  byte elements;
+  // Stores the lineID of the menu it will move to if element is selected
+  // In the event that there is no next menu, set this to the surrent menus lineID
+  byte next[MAX_MENU_ELEMENTS];
+  // Stores the lineID of the menu it will move to if the back button is pressed
+  // If there is no previous menu or the user should not be able to go back, set this to the surrent menus lineID
+  byte prev;
+ 
+} menu_t1;
 
 menu_t *currentMenu;
 menu_t initialMenu = {};
@@ -55,9 +77,13 @@ menu_t myPokemonMenu = {};
 menu_t pickPokemonForBattleMenu = {};
 menu_t movesMenu = {};
 
+//menu_t1 *currentMenu;
+menu_t1 menu1 = {};
 
 
-struct  moves_t {
+
+struct  moves_t 
+{
   byte id;
   char name[14];
   byte power;
@@ -133,7 +159,7 @@ void initialMenuFunctionDecider();
 
 
 /////////////////////////////////////////////////////////////////////////////// pokedex prototypes
-String loadPokemon(int _pokemonNum);
+String loadData(int _id, char _lastElement, int _step);
 PImage getBackImage(int _pokemonNum);
 PImage getFrontImage(int _pokemonNum);
 String getType_str(String &_PokemonData);
@@ -154,6 +180,10 @@ String getName(String &_PokemonData);
 pokemon getPokemon(String &_PokemonData);
 stats_t getStats_t(String &_PokemonData);
 
+int getElementsNumber(String &_MenuData);
+byte getPreviousElement(String &_MenuData);
+byte getMenuElement(int _id, String &_MenuData);
+char * getMenuElementName(int _id, String &_MenuData);
 /////////////////////////////////////////////////////////////////////////////// GUI prototypes
 
 void clearScreen();
